@@ -1,3 +1,36 @@
 body {
-	background-color: #fcefef;	
+	background-color: #fcefef;
+}
+
+#header {
+	background: #d22424;
+	text-align: center;
+	color: white;
+	padding: 60px;
+	font-family: arial;
+	line-height: 10px;
+	font-size: 20px;
+}
+
+#header h1 {
+	font-size: 50px;
+}
+
+.flexPositioning {
+	display: flex;
+	justify-content: space-around;
+}
+
+.flexPositioning figcaption#header {
+	text-align: center;
+	color: white;
+	font-family: fantasy;
+	font-style: bold;
+	padding: 20px;
+	background-color: #696969;
+}
+
+.flexPositioning figcaption#paragraph {
+	background-color: #e34949;
+	color: white;
 }
