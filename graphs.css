@@ -26,11 +26,23 @@ body {
 	color: white;
 	font-family: fantasy;
 	font-style: bold;
+	font-size: 40px;
 	padding: 20px;
-	background-color: #696969;
+	max-width: 500px;
+	background-color: #d22424;
 }
 
 .flexPositioning figcaption#paragraph {
+	text-align: center;
 	background-color: #e34949;
+	max-width: 500px;
+	height: 200px;
+	font-size: 25px;
 	color: white;
+}
+
+.flexPositioning canvas {
+	background-image: url('field.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
 }

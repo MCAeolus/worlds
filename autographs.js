@@ -1,7 +1,6 @@
 
-const moveSpeed = 5 * 1000;
+const moveSpeed = 5* 1000;
 var index = 0;
-var graphsDrawn = false;
 
 async function updateGraphs() {
 
@@ -11,24 +10,33 @@ async function updateGraphs() {
 	var mGraph = document.getElementById("center graph");
 	var rGraph = document.getElementById("right graph");
 
-	getNextThreeJSON().then(array => {
+	getNextThreeJSON().then(ret => {
+		var array = ret;
 		doGraph(lGraph, array[0]);
 		doGraph(mGraph, array[1]);
 		doGraph(rGraph, array[2]);
-	}).then(() => {
-		if(!graphsDrawn) graphsDrawn = true;
 	});
 
 }
 
 async function getNextThreeJSON() {
 	var files = [];
+	var initIndex = index;
 	for(let i = 0; i < 3; i++) {
 		await getJSON(index).then(function (ret) {
 				files.push(ret);
 		});
 	}
+	var newIndex = initIndex + 1;
+	await fileExists(formatFilePath(newIndex)).then(r => {
+		if(!r) newIndex = 0;
+	});
+	index = newIndex;
 	return files;
+}
+
+function formatFilePath(index) {
+	return 'graphData/replay' + index + '.json';
 }
 
 async function fileExists(path) {
@@ -50,12 +58,12 @@ async function fileExists(path) {
 async function getJSON(pathNum) {
 	var failRequest = {"name":"failed to handle JSON request."};
 	return new Promise(async function(resolve, reject) {
-		var attemptPath = 'graphData/replay' + pathNum + '.json';
+		var attemptPath = formatFilePath(pathNum);
 		await fileExists(attemptPath).then(response => {
-			if(response == false) {
+			if(!response) {
 				if(pathNum != 0) {
 					pathNum = 0;
-					attemptPath = 'graphData/replay' + pathNum + '.json';
+					attemptPath = formatFilePath(pathNum);
 				}else resolve(failRequest);
 			}
 			var grabJSONRequest = new XMLHttpRequest();
@@ -77,48 +85,59 @@ function doGraph(figure, json) { //TODO stop refreshing images every update.
 	var canvas = figure.getElementsByTagName('canvas')[0];
 	var captions = figure.getElementsByTagName('figcaption');
 	var context = canvas.getContext('2d');
-	var image = new Image();
-	image.src = 'field.jpg';
+	//var image = new Image();
+	//image.src = 'field.jpg';
 
 	canvas.height = 500;
 	canvas.width = 500;
+	
+	captions[0].innerHTML = json.start + ": " + json.name;
+	captions[1].innerHTML = json.description;	
 
-	const inchesToPixels = 500 / 144; //(500 inch width or height / 12ft * 12 inches)
-	var lastCoord = null;
-
-	image.onload = function() {
-		context.drawImage(image, 0, 0, 500, 500);
-		captions[0].innerHTML = json.start + ": " + json.name;
-		captions[1].innerHTML = json.description;
-
-		for(coord in json.data) {
-			var realCoord = json.data[coord];
+	const inchesToPixels = 500 / 144; //(500 inch width or height / 12ft * (12 inches)
+	
+	const colors = ['lime', 'yellow', 'blue'];
+	
+	for(var i = 0; i < 3; i++){
+		var plotPoints = json.data[i];
+		var lastCoord = null;
+		
+		for(coord in plotPoints) {
+			var realCoord = plotPoints[coord];
 			var pixelX = -(inchesToPixels * realCoord.x) + 500/2; //convert to canvas coords
 			var pixelY = -(inchesToPixels * realCoord.y) + 500/2;
-
-
+		
 			if(lastCoord != null) {
 				context.beginPath();
 				context.moveTo(pixelX, pixelY);
 				context.lineTo(lastCoord.x, lastCoord.y);
-				context.strokeStyle = "lime";
+				context.strokeStyle = colors[i];
 				context.lineWidth = 10;
 				context.stroke();
 			}
 			lastCoord = {"x":pixelX, "y":pixelY};
-
 		}
 	}
-		/**
-		switch (finalJson.start) {
-			case "crater":
-
-				break;
-			case "depot":
-
-				break;
-
-		}**/
+	
+	/**
+	
+	
+	var lastCoord = null;
+	for(coord in json.data) {
+		var realCoord = json.data[coord];
+		var pixelX = -(inchesToPixels * realCoord.x) + 500/2; //convert to canvas coords
+		var pixelY = -(inchesToPixels * realCoord.y) + 500/2;
+		
+		if(lastCoord != null) {
+			context.beginPath();
+			context.moveTo(pixelX, pixelY);
+			context.lineTo(lastCoord.x, lastCoord.y);
+			context.strokeStyle = "lime";
+			context.lineWidth = 10;
+			context.stroke();
+		}
+		lastCoord = {"x":pixelX, "y":pixelY};
+	}**/
 }
 
 function onLoad() {
