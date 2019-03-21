@@ -27,6 +27,7 @@ async function getNextThreeJSON() {
 				files.push(ret);
 		});
 	}
+	//new global index should be original index + 1, this checks for overflow
 	var newIndex = initIndex + 1;
 	await fileExists(formatFilePath(newIndex)).then(r => {
 		if(!r) newIndex = 0;
@@ -81,7 +82,7 @@ async function getJSON(pathNum) {
 	});
 }
 
-function doGraph(figure, json) { //TODO stop refreshing images every update.
+function doGraph(figure, json) {
 	var canvas = figure.getElementsByTagName('canvas')[0];
 	var captions = figure.getElementsByTagName('figcaption');
 	var context = canvas.getContext('2d');
