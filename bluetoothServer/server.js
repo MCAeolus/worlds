@@ -31,10 +31,11 @@ serial.on('close', function() {
 
 serial.on('finished', function() {
 	console.log("Bluetooth inquiry finished.");
-	serial.close();
+	//serial.close();
 	serial.inquire();
 });
 
+console.log("test");
 serial.inquire()
 
 
