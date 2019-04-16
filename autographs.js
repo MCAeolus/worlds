@@ -93,7 +93,9 @@ function doGraph(figure, json) {
 	canvas.width = 500;
 	
 	captions[0].innerHTML = json.start + ": " + json.name;
-	captions[1].innerHTML = json.description;	
+	captions[1].innerHTML = json.description;
+	
+	const r = json.start === "crater" ? (Math.PI/4) : -(Math.PI/4); 
 
 	const inchesToPixels = 500 / 144; //(500 inch width or height / 12ft * (12 inches)
 	
@@ -102,11 +104,34 @@ function doGraph(figure, json) {
 	for(var i = 0; i < 3; i++){
 		var plotPoints = json.data[i];
 		var lastCoord = null;
+		var initCoord = plotPoints[0];
+				
+		var scale = 1.0;
+		var dX = 0.0;
+		var dY = 0.0;
+		
+		for(cd in plotPoints) {
+			for(cd2 in plotPoints) {
+				var coord1 = plotPoints[cd];
+				var coord2 = plotPoints[cd2];
+				var yDiff = Math.abs(coord1.y - coord2.y);
+				var xDiff = Math.abs(coord1.x - coord2.x);
+				if(dY < yDiff) dY = yDiff;
+				if(dX < xDiff) dX = xDiff;
+			}
+		}
+		
+		scale = 144 / ((dX > dY) ? dX : dY);
+		
 		
 		for(coord in plotPoints) {
-			var realCoord = plotPoints[coord];
-			var pixelX = -(inchesToPixels * realCoord.x) + 500/2; //convert to canvas coords
-			var pixelY = -(inchesToPixels * realCoord.y) + 500/2;
+			var origPoints = plotPoints[coord];
+			
+			var modCoord = [(origPoints.x - initCoord.x) * scale, (origPoints.y - initCoord.y) * scale];
+			//console.log(modCoord[0] + " " + modCoord[1]);
+			var realCoord = rotateCoordinate(modCoord[0], modCoord[1], r);
+			var pixelX = -(inchesToPixels * realCoord[0]) + 500/2; //convert to canvas coords
+			var pixelY = -(inchesToPixels * realCoord[1]) + 500/2;
 		
 			if(lastCoord != null) {
 				context.beginPath();
@@ -117,6 +142,7 @@ function doGraph(figure, json) {
 				context.stroke();
 			}
 			lastCoord = {"x":pixelX, "y":pixelY};
+		
 		}
 	}
 	
@@ -139,6 +165,10 @@ function doGraph(figure, json) {
 		}
 		lastCoord = {"x":pixelX, "y":pixelY};
 	}**/
+}
+
+function rotateCoordinate(x, y, r) {
+	return [(x * Math.cos(r) - y * Math.sin(r)), (y * Math.cos(r) + x * Math.sin(r))]
 }
 
 function onLoad() {
