@@ -1,7 +1,7 @@
 const com = new BroadcastChannel("displays");
 const time = 20 * 1000;
 
-const pages = ["./graphs.html", "./robot-drivetrain.html", "./DRIVETRAINVID.html", "./INTAKEVID.html", "./LIFTVID.html", "./LINEARSLIDESVID.html", "./OUTTAKEVID.html"];
+const pages = ["./graphs.html", "./robot-drivetrain.html", "./DRIVETRAINVID.html", "./robot-intake.html","./INTAKEVID.html", "./robot-lift.html", "./LIFTVID.html", "./robot-intakeslides.html", "./LINEARSLIDESVID.html", "./robot-outtake.html", "./OUTTAKEVID.html"];
 
 var thisPage = Math.round(pages.length / 2);
 var nextPage = 0;
@@ -31,7 +31,7 @@ function pressCreate() {
 	document.getElementById("btn").style.display = "none";
 	document.getElementById("frame").style.display =  "block";
 	winDisplay2 = window.open('./display2.html','_blank', 'location=yes,height=1080,width=1920');
-	winControlPanel = window.open('./control_panel.html', '_blank', 'location=yes,height=1080,width=1920');
+	winControlPanel = window.open('./control_panel.html', '_blank', 'location=yes,height=800,width=600');
 	postPress();
 	
 }
